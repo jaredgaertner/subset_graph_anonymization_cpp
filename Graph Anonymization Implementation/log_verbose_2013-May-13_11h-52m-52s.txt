@@ -1,0 +1,205 @@
+
+Start: Reading in wiki vote data ...
+
+Read 10000 edges out of 103689.
+Read 20000 edges out of 103689.
+Read 30000 edges out of 103689.
+Read 40000 edges out of 103689.
+Read 50000 edges out of 103689.
+Read 60000 edges out of 103689.
+Read 70000 edges out of 103689.
+Read 80000 edges out of 103689.
+Read 90000 edges out of 103689.
+Read 100000 edges out of 103689.
+
+End: Reading in wiki vote data ... (Took 0.561 seconds)
+
+
+Start: Creating graph from wiki vote data ...
+
+Number of edges: 100762
+
+End: Creating graph from wiki vote data ... (Took 0.546 seconds)
+
+
+
+------------------------------------------------------------------------------
+Experiment number: 1
+	Number of vertices: 7115
+	Number of vertices (double check size in G): 8298
+	k: 2
+	Size of X (percentage of number of vertices): 0.1
+
+Start: Creating subset X of G ...
+
+Number of vertices in X: 712
+
+End: Creating subset X of G ... (Took 0.031 seconds)
+
+
+Start: Determining degree anonymization ...
+
+Cost of anonymizing: 137
+Anonymized degree sequence (vertex id below in brackets): 
+
+End: Determining degree anonymization ... (Took 0 seconds)
+
+
+Start: Determine the upper bounds for vertices in X
+
+
+Upper bounds (vertex id below in brackets): 
+5	1	1	2	1	1	1	1	1	2	2	1	1	4	26	7	4	2	1	2	1	1	1	1	10	12	1	13	7	2	2	1	4	1	12	1	1
+
+(2)	(16)	(19)	(23)	(74)	(88)	(89)	(116)	(129)	(195)	(213)	(216)	(219)	(230)	(246)	(276)	(304)	(308)	(315)	(316)	(323)	(324)	(337)	(341)	(348)	(415)	(418)	(434)	(439)	(476)	(481)	(483)	(525)	(547)	(663)	(682)	(711)
+
+End: Determine the upper bounds for vertices in X (Took 0 seconds)
+
+
+Start: Finding complement of X ...
+
+
+End: Finding complement of X ... (Took 0.015 seconds)
+
+
+Start: Determine the lower bounds and delta values for every vertex in X/X_com
+
+
+End: Determine the upper, lower bounds and delta values for every vertex in X/X_com (Took 0 seconds)
+
+
+Start: Explicit representation: Substitute K_d,delta structure for each vertex in G', determine list of edges and initial matching ...
+
+G' properties:
+	Number of vertices: 1009527
+	Number of edges: 357861149
+	Number of vertices (actually used): 2315
+	Number of edges (actually used): 37276
+
+End: Explicit representation: Substitute K_d,delta structure for each vertex in G', determine list of edges and initial matching ... (Took 0.016 seconds)
+
+
+Start: Add edges between external vertices in G' ...
+
+
+End: Add edges between external vertices in G' ... (Took 0 seconds)
+
+
+Start: Creating graph G' ...
+
+Vertices in G with delta equal to zero: 246,
+End: Creating graph G' ... (Took 0.343 seconds)
+
+
+Start: Finding matching on G' ...
+
+
+End: Finding matching on G' ... (Took 0.047 seconds)
+
+
+Start: Adding edges from H to X, displaying final degree sequence ...
+
+Edges to add to X to make it k-degree anonymous:
+
+Global		Local
+(2651,2940)		(246,276)
+(2651,3136)		(246,304)
+(2651,3642)		(246,348)
+(2651,4483)		(246,415)
+(2651,4510)		(246,418)
+(2651,4712)		(246,434)
+(2651,4795)		(246,439)
+(2651,5177)		(246,476)
+(2651,5288)		(246,481)
+(2651,5316)		(246,483)
+(2651,5811)		(246,525)
+(2651,6170)		(246,547)
+(2651,7553)		(246,663)
+(3642,56)		(348,2)
+(3642,2384)		(348,230)
+(3642,2940)		(348,276)
+(3642,3136)		(348,304)
+(3642,3253)		(348,315)
+(3642,3260)		(348,316)
+(3642,3516)		(348,337)
+(3642,5811)		(348,525)
+(3642,7795)		(348,682)
+(4712,56)		(434,2)
+(4712,192)		(434,16)
+(4712,282)		(434,23)
+(4712,1129)		(434,116)
+(4712,1991)		(434,195)
+(4712,2174)		(434,213)
+(4712,2229)		(434,219)
+(4712,2384)		(434,230)
+(4712,2940)		(434,276)
+(4712,3136)		(434,304)
+(4712,3192)		(434,308)
+(4712,3351)		(434,324)
+(4483,56)		(415,2)
+(4483,282)		(415,23)
+(4483,2174)		(415,213)
+(4483,2210)		(415,216)
+(4483,2384)		(415,230)
+(4483,2940)		(415,276)
+(4483,3192)		(415,308)
+(4483,3260)		(415,316)
+(4483,3346)		(415,323)
+(4483,5288)		(415,481)
+(4483,8297)		(415,711)
+(7553,56)		(663,2)
+(7553,223)		(663,19)
+(7553,761)		(663,74)
+(7553,854)		(663,88)
+(7553,861)		(663,89)
+(7553,1285)		(663,129)
+(7553,1991)		(663,195)
+(7553,2384)		(663,230)
+(7553,2940)		(663,276)
+(7553,4795)		(663,439)
+(7553,5811)		(663,525)
+(2940,4795)		(276,439)
+(2940,5177)		(276,476)
+(56,4795)		(2,439)
+(4795,3136)		(439,304)
+(4795,3587)		(439,341)
+(4795,5811)		(439,525)
+
+End: Adding edges from H to X, displaying final degree sequence ... (Took 0 seconds)
+
+
+Start: Find possible additional edges in G \ X to make X k-anonymous...
+
+Edges to add to X to make it k-degree anonymous (in X, in G \ X):
+
+(2651,1855)
+(2651,3327)
+(2651,5362)
+(2651,7849)
+(2651,5822)
+(2651,1767)
+(2651,7883)
+(2651,7877)
+(2651,8035)
+(2651,7852)
+(2651,7637)
+(2651,4342)
+(2651,1558)
+
+End: Find possible edges to add from G \ X to X to make X k-anonymous... (Took 0 seconds)
+
+
+Start: Check if X is k-anonymous...
+
+SUCCESS: X made k-anonymous.
+
+End: Check if X is k-anonymous... (Took 0 seconds)
+
+
+Start: Check if G is k-anonymous...
+
+G is not k-anonymous.
+
+End: Check if G is k-anonymous... (Took 0 seconds)
+
+Succeeded 1 times and failed 0 times.
