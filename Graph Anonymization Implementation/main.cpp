@@ -6,11 +6,12 @@
 #include <limits>
 #include <string>
 #include <fstream>
+#include <iomanip>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/assign/list_of.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/posix_time/posix_time_io.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
+//#include <boost/date_time/posix_time/posix_time_io.hpp>
 #include <boost/iostreams/device/file.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/tee.hpp>
@@ -19,14 +20,14 @@
 #include <boost/graph/copy.hpp>
 #include <boost/graph/subgraph.hpp>
 //#include <boost/graph/graphml.hpp>
-#include <boost/graph/graphviz.hpp>
+//#include <boost/graph/graphviz.hpp>
 #include <boost/graph/plod_generator.hpp>
 #include <boost/graph/small_world_generator.hpp>
-#include <boost/graph/max_cardinality_matching.hpp>
+//#include <boost/graph/max_cardinality_matching.hpp>
 #include <boost/random.hpp>
 #include <boost/timer.hpp>
 
-#include "max_cardinality_matching_no_mapping.hpp"
+#include "max_cardinality_matching_w_no_initial_finder.hpp"
 
 // Create random function which outputs from [0,1)
 boost::random::mt19937 rng( static_cast<unsigned int>(time(0)) );
@@ -177,13 +178,11 @@ int main()
 				break;
 
 			case KARATE_GRAPH:
-				//get_inputs(k, subset_X_percent);
 				number_of_vertices = 34;
 				number_of_vertices_cases.push_back(number_of_vertices);
 				break;
 
 			case POWERGRID_GRAPH:
-				//get_inputs(k, subset_X_percent);
 				number_of_vertices = 4941;
 				number_of_vertices_cases.push_back(number_of_vertices);
 				break;
@@ -204,11 +203,10 @@ int main()
 		}
 
 		// Name output file (use if only one log file wanted for all cases, use date to identify it)
-		boost::posix_time::time_facet *facet = new boost::posix_time::time_facet("%Y-%b-%d_%Hh-%Mm-%Ss");
+		auto t = std::time(nullptr);
+		auto tm = *std::localtime(&t);
+		auto current_date_and_time = std::put_time(&tm, "%Y-%b-%d_%Hh-%Mm-%Ss");
 		std::stringstream ss;
-		ss.str("");
-		ss.imbue( std::locale(ss.getloc(), facet) );
-		boost::posix_time::ptime current_date_and_time = boost::posix_time::second_clock::local_time();
 		ss << "log_verbose_" << current_date_and_time << ".txt";
 		
 		std::string log_file_verbose_name(ss.str());
@@ -262,32 +260,9 @@ int main()
 				for(k_it = k_cases.begin(); k_it < k_cases.end(); k_it++){
 					k = *k_it;
 
-					//// Name output file (use if different log files for each case wanted)
-					////posix_time::time_facet *facet = new posix_time::time_facet("%Y-%b-%d_%Hh-%Mm-%Ss");
-					//std::stringstream ss;
 					std::stringstream current_graph_case;
-					//ss.str("");
 					current_graph_case.str("");
 					current_graph_case << "(" << graph_titles[input_graph] << ")_n_" << number_of_vertices << "_k_" << k << "_subset_" << (int)(100.0 * subset_X_percent);
-					////posix_time::ptime current_date_and_time = posix_time::second_clock::local_time();
-					//ss << "log_" << current_graph_case.str() << "_verbose.txt";
-					//
-					//std::string log_file_verbose_name(ss.str());
-					//if( log_file_verbose.is_open() ){
-					//	log_file_verbose.close();
-					//}
-					//log_file_verbose.open(log_file_verbose_name);
-
-					//ss.str("");
-					//ss << "log_" << current_graph_case.str() << "_pertinent.txt";
-					//std::string log_file_pertinent_name(ss.str());
-					//if( log_file_pertinent.is_open() ){
-					//	log_file_pertinent.close();
-					//}
-					//log_file_pertinent.open(log_file_pertinent_name);
-
-					//// Set log_file_pertinent to print "true" for bool instead of 1
-					//log_file_pertinent << boolalpha;
 
 					cout_and_log_file_pertinent << std::endl << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 					cout_and_log_file_pertinent << "Start case:" << std::endl;
@@ -329,7 +304,7 @@ int main()
 							ss.str("");
 							ss << "G_" << current_graph_case.str() << ".gv";
 							boost::iostreams::stream<boost::iostreams::file_sink> graph_file(ss.str());
-							write_graphviz(graph_file, G_orig);
+							//write_graphviz(graph_file, G_orig);
 							DEBUG_END("Writing graph G to graph file in graphviz .dot format ...");
 							}
 							break;
@@ -364,7 +339,7 @@ int main()
 							ss.str("");
 							ss << "G_" << current_graph_case.str() << ".gv";
 							boost::iostreams::stream<boost::iostreams::file_sink> graph_file(ss.str());
-							write_graphviz(graph_file, G_orig);
+							//write_graphviz(graph_file, G_orig);
 							DEBUG_END("Writing graph G to graph file in graphviz .dot format ...");
 							}
 							break;
@@ -733,7 +708,7 @@ int main()
 							d.push_back(degree_vertex);
 						}
 						sort(d.begin(), d.end(), compare_descending);
-						//print_degree_sequence("Degree sequence", d);
+						print_degree_sequence("Degree sequence", d);
 						
 						// Check for clique
 						if( d.front().first == d.back().first ){
@@ -760,7 +735,7 @@ int main()
 						SetOfDegreeSequences = DegreeAnonymization(d, number_of_vertices_X, k, false);
 						std::vector<degree_vertex_pair> AnonymizedDegreeSequence(SetOfDegreeSequences.back());
 						
-						//print_degree_sequence("Anonymized degree sequence", AnonymizedDegreeSequence);
+						print_degree_sequence("Anonymized degree sequence", AnonymizedDegreeSequence);
 						ss.str("");
 						ss << "anonymized_degree_sequence_k_" << k << "_Xpercent_" << (size_t)(subset_X_percent * 100.0) << "_exp_" << current_experiment << ".txt";
 						boost::iostreams::stream<boost::iostreams::file_sink> anonymized_degree_sequence_output_file(ss.str());
@@ -859,8 +834,8 @@ int main()
 						}
 						number_of_edges_X_prime_actual += number_of_edges_X_com;
 
-						//print_degree_sequence("Lower bounds", lower_bounds);
-						//print_degree_sequence("Delta values", delta);
+						print_degree_sequence("Lower bounds", lower_bounds);
+						print_degree_sequence("Delta values", delta);
 						DEBUG_END("Determine the upper, lower bounds and delta values for every vertex in X/X_com");
 
 						///////////////////////////////////////////////////////////////////////////////////
@@ -893,7 +868,7 @@ int main()
 							d_added_edges_within_X.push_back(degree_vertex);
 						}
 						sort(d_added_edges_within_X.begin(), d_added_edges_within_X.end(), compare_descending);
-						//print_degree_sequence("Degree sequence of graph after added edges within X", d_added_edges_within_X);
+						print_degree_sequence("Degree sequence of graph after added edges within X", d_added_edges_within_X);
 						DEBUG_END("Adding edges from H to X, displaying final degree sequence ...");
 
 						DEBUG_START("Find possible additional edges in G \\ X to make X k-anonymous...");
@@ -961,8 +936,8 @@ int main()
 							}
 							sort(d_final.begin(), d_final.end(), compare_descending);
 
-							//print_degree_sequence("Anonymized degree sequence", AnonymizedDegreeSequence);
-							//print_degree_sequence("Degree sequence of final graph X", d_final);
+							print_degree_sequence("Anonymized degree sequence", AnonymizedDegreeSequence);
+							print_degree_sequence("Degree sequence of final graph X", d_final);
 						}
 						else{
 
@@ -1056,8 +1031,8 @@ int main()
 						log_file_pertinent << "Number of vertices in X_com': " << number_of_vertices_X_prime_actual << std::endl; number_of_vertices_X_prime_actual_total += number_of_vertices_X_prime_actual;
 						log_file_pertinent << "Number of edges in X_com': " << number_of_edges_X_prime_actual << std::endl; number_of_edges_X_prime_actual_total += number_of_edges_X_prime_actual;
 						log_file_pertinent << std::endl;
-						//print_degree_sequence("Initial degree sequence", d, false);
-						//print_degree_sequence("Final degree sequence", d_final, false);
+						print_degree_sequence("Initial degree sequence", d, false);
+						print_degree_sequence("Final degree sequence", d_final, false);
 						log_file_pertinent << "------------------------------------------------------------------------------" << std::endl;
 
 						//ExpNo,|V|,k,|X|-pct,opt,success,Intra-ad,Extra-ad,time,sum_def,|V_com'|,|E_com'|
@@ -1223,7 +1198,7 @@ std::vector< vertex_pair_t > upper_degree_constrained_subgraph(Graph G, std::vec
 				log_file_verbose << *sit << ",";
 			}
 			
-			//print_degree_sequence("Corresponding vertices in K_d,delta", vertex_K_d_delta);
+			print_degree_sequence("Corresponding vertices in K_d,delta", vertex_K_d_delta);
 
 			//DEBUG_START("Writing graph G_prime to graph file in graphviz .dot format ...");
 			//std::stringstream ss;
@@ -1335,17 +1310,15 @@ std::vector< vertex_pair_t > upper_degree_constrained_subgraph(Graph G, std::vec
 	}
 	else{
 		// Find maximum cardinality matching in G', which corresponds upper degree constained subgraph G
-		//	http://www.boost.org/doc/libs/1_47_0/libs/graph/doc/maximum_matching.html
+		//	http://www.boost.org/doc/libs/1_62_0/libs/graph/doc/maximum_matching.html
 
-		if( num_edges(G_prime) > 0 ){
-			//bool check_matching = matching<Graph, size_t *, property_std::map<Graph, vertex_index_t>::type,
-			//	edmonds_augmenting_path_finder, input_initial_matching, maximum_cardinality_matching_verifier>(G_prime, &initial_matching[0], get(vertex_index,G_prime));
-	//no_matching_verifier
-			bool check_matching = boost_altered::checked_edmonds_maximum_cardinality_matching(G_prime, initial_matching, get(boost::vertex_index,G_prime));
-			//boost_altered::edmonds_maximum_cardinality_matching(G_prime, initial_matching, get(vertex_index,G_prime));
+		if(boost::num_edges(G_prime) > 0 ){
+			print_degree_sequence("Mates before: ", initial_matching);
+			bool check_matching = boost::checked_edmonds_maximum_cardinality_matching_w_no_initial_finder(G_prime, &initial_matching[0]);
+			print_degree_sequence("Mates after: ", initial_matching);
 
 			if( check_matching ){
-				//log_file_verbose << "Maximum cardinality matching size: " << matching_size(G_prime, &initial_matching[0]) << std::endl;
+				log_file_verbose << "Maximum cardinality matching size: " << matching_size(G_prime, &initial_matching[0]) << std::endl;
 
 				// Find edges to be added to G, which corresponds to the maximum cardinality matching in G'
 				vertex_iterator_t ui, ui_end;
@@ -1354,16 +1327,16 @@ std::vector< vertex_pair_t > upper_degree_constrained_subgraph(Graph G, std::vec
 						size_t index_match_start = vertex_K_d_delta.at(*ui);	// Find which vertex in G u_i 
 						size_t index_match_end = vertex_K_d_delta.at(initial_matching[*ui]);
 						if(index_match_start != index_match_end){
-							//log_file_verbose << "Add edge {" << index_match_start << ", " << index_match_end << "} to G to make it k-degree anonymous." << std::endl;
+							log_file_verbose << "Add edge {" << index_match_start << ", " << index_match_end << "} to G to make it k-degree anonymous." << std::endl;
 							H.push_back( std::make_pair(index_match_start, index_match_end) );
 						}
 					}
 				}
 			}
-			//else{
-			//	cout_and_log_file_pertinent << "ERROR!!! Maximum cardinality matching failed check." << std::endl;
-			//	exit_program();
-			//}
+			else{
+				cout_and_log_file_pertinent << "ERROR!!! Maximum cardinality matching failed check." << std::endl;
+				exit_program();
+			}
 		}
 	}
 	DEBUG_END("Finding matching on G' ...");
@@ -1988,355 +1961,6 @@ void get_input(const std::string& description, input_type& input){
 	}
 	std::cout << "You entered: " << cin_input << " for " << description << "." << std::endl << std::endl;
 }
-
-//void get_inputs(size_t& k, double& subset_X_percent){
-//
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get k value, check if valid
-//	//
-//	std::string input = "";
-//	while(1){
-//		cout_and_log_file_pertinent << "Enter value for k (0 to EXIT, ENTER for default<" << default_k << ">): ";
-//		cout_and_log_file_pertinent.flush();
-//		getline(std::cin, input);
-//
-//		if( input.empty() ){
-//			k = default_k;
-//			break;
-//		}
-//
-//		// This code converts from std::string to number safely.
-//		std::stringstream myStream(input);
-//
-//		if (myStream >> k){
-//			if( k <= 1 ){
-//				if( k == 0 ){
-//					exit_program();
-//				}
-//				else{
-//					cout_and_log_file_pertinent << "Invalid number, must be greater than 1" << std::endl;
-//					continue;
-//				}
-//			}
-//			else{
-//				default_k = k;
-//				break;
-//			}
-//		}
-//		cout_and_log_file_pertinent << "Invalid number, please try again" << std::endl;
-//	}
-//	cout_and_log_file_pertinent << "You entered: " << k << std::endl << std::endl;
-//
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get subset_X_percent value, check if valid
-//	//
-//	input = "";
-//	while(1){
-//		cout_and_log_file_pertinent << "Enter value for subset X percent of G (0 to EXIT, ENTER for default<" << default_subset_X_percent << ">): ";
-//		cout_and_log_file_pertinent.flush();
-//		getline(std::cin, input);
-//
-//		if( input.empty() ){
-//			subset_X_percent = default_subset_X_percent;
-//			break;
-//		}
-//
-//		// This code converts from std::string to number safely.
-//		std::stringstream myStream(input);
-//
-//		if (myStream >> subset_X_percent){
-//			if( subset_X_percent <= 0.0){
-//				exit_program();
-//			}
-//			else if( subset_X_percent > 1.0 ){
-//				cout_and_log_file_pertinent << "Invalid number, must be greater than 0 and less than or equal to 1.0" << std::endl;
-//				continue;
-//			}
-//			else{
-//				default_subset_X_percent = subset_X_percent;
-//				break;
-//			}
-//		}
-//		cout_and_log_file_pertinent << "Invalid number, please try again" << std::endl;
-//	}
-//	cout_and_log_file_pertinent << "You entered: " << subset_X_percent << std::endl << std::endl;
-//}
-//
-//void get_inputs(double& alpha, double& beta){
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get alpha
-//	//
-//	std::string input = "";
-//	while(1){
-//		cout_and_log_file_pertinent << std::endl << "Alpha for scale-free graph (0 to EXIT, ENTER for default<" << default_alpha << ">): ";
-//		cout_and_log_file_pertinent.flush();
-//		getline(std::cin, input);
-//
-//		if( input.empty() ){
-//			alpha = default_alpha;
-//			break;
-//		}
-//
-//		// This code converts from std::string to number safely.
-//		std::stringstream myStream(input);
-//
-//		if (myStream >> alpha){
-//			if( alpha <= 0.0 ){
-//				exit_program();
-//			}
-//			else if( alpha > 3.0 || alpha <= 2.0 ){
-//				cout_and_log_file_pertinent << "Invalid number, must be greater than 1 and less than or equal to 3.0 (scale-free generally between 2 and 3)" << std::endl;
-//				continue;
-//			}
-//			else{
-//				default_alpha = alpha;
-//				break;
-//			}
-//		}
-//		cout_and_log_file_pertinent << "Invalid number, please try again" << std::endl;
-//	}
-//	cout_and_log_file_pertinent << "You entered: " << alpha << std::endl << std::endl;
-//
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get beta
-//	//
-//	input = "";
-//	while(1){
-//		cout_and_log_file_pertinent << std::endl << "Beta for scale-free graph (0 to EXIT, ENTER for default<" << default_beta << ">): ";
-//		cout_and_log_file_pertinent.flush();
-//		getline(std::cin, input);
-//
-//		if( input.empty() ){
-//			beta = default_beta;
-//			break;
-//		}
-//
-//		// This code converts from std::string to number safely.
-//		std::stringstream myStream(input);
-//
-//		if (myStream >> beta){
-//			if( beta <= 0.0 ){
-//				exit_program();
-//			}
-//			else if(beta <= 1.0){
-//				cout_and_log_file_pertinent << "Invalid number, must be greater than 1.0" << std::endl;
-//				continue;
-//			}
-//			else{
-//				default_beta = beta;
-//				break;
-//			}
-//		}
-//		cout_and_log_file_pertinent << "Invalid number, please try again" << std::endl;
-//	}
-//	cout_and_log_file_pertinent << "You entered: " << beta << std::endl << std::endl;
-//}
-//
-//void get_inputs(size_t& number_of_experiments, size_t& k, double& subset_X_percent, size_t& number_of_vertices, size_t& k_nearest_neighbors){
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get number of experiments to run, check if valid
-//	//
-//	std::string input = "";
-//	while(1){
-//		cout_and_log_file_pertinent << std::endl << "Enter number of experiments to run (0 to EXIT, ENTER for default<" << default_number_of_experiments << ">): ";
-//		cout_and_log_file_pertinent.flush();
-//		getline(std::cin, input);
-//
-//		if( input.empty() ){
-//			number_of_experiments = default_number_of_experiments;
-//			break;
-//		}
-//
-//		// This code converts from std::string to number safely.
-//		std::stringstream myStream(input);
-//
-//		if (myStream >> number_of_experiments){
-//			if( number_of_experiments <= 0 ){
-//				if( number_of_experiments == 0 ){
-//					exit_program();
-//				}
-//				else{
-//					cout_and_log_file_pertinent << "Invalid number, must be greater than 0" << std::endl;
-//					continue;
-//				}
-//			}
-//			else{
-//				default_number_of_experiments = number_of_experiments;
-//				break;
-//			}
-//		}
-//		cout_and_log_file_pertinent << "Invalid number, please try again" << std::endl;
-//	}
-//	cout_and_log_file_pertinent << "You entered: " << number_of_experiments << std::endl << std::endl;
-//
-//	// get k and subset_X_percent from user
-//	get_inputs(k, subset_X_percent);
-//
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get number of vertices, check if valid
-//	//
-//	input = "";
-//	while(1){
-//		cout_and_log_file_pertinent << std::endl << "Enter number of vertices (0 to EXIT, ENTER for default<" << default_number_of_vertices << ">): ";
-//		cout_and_log_file_pertinent.flush();
-//		getline(std::cin, input);
-//
-//		if( input.empty() ){
-//			number_of_vertices = default_number_of_vertices;
-//			break;
-//		}
-//
-//		// This code converts from std::string to number safely.
-//		std::stringstream myStream(input);
-//
-//		if (myStream >> number_of_vertices){
-//			if( number_of_vertices <= 1 ){
-//				if( number_of_vertices == 0 ){
-//					exit_program();
-//				}
-//				else{
-//					cout_and_log_file_pertinent << "Invalid number, must be greater than 1" << std::endl;
-//					continue;
-//				}
-//			}
-//			else{
-//				default_number_of_vertices = number_of_vertices;
-//				break;
-//			}
-//		}
-//		cout_and_log_file_pertinent << "Invalid number, please try again" << std::endl;
-//	}
-//	cout_and_log_file_pertinent << "You entered: " << number_of_vertices << std::endl << std::endl;
-//
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get k_nearest_neighbors_percent value, check if valid
-//	//
-//	input = "";
-//	while(1){
-//		cout_and_log_file_pertinent << "Each vertex connected to its k-nearest neighbors in small-world graph.  Enter value for k-nearest neighbors (0 to EXIT, ENTER for default<" << default_k_nearest_neighbors << ">): ";
-//		cout_and_log_file_pertinent.flush();
-//		getline(std::cin, input);
-//
-//		if( input.empty() ){
-//			k_nearest_neighbors = default_k_nearest_neighbors;
-//			break;
-//		}
-//
-//		// This code converts from std::string to number safely.
-//		std::stringstream myStream(input);
-//
-//		if (myStream >> k_nearest_neighbors){
-//			if( k_nearest_neighbors < 1 || k_nearest_neighbors >= number_of_vertices ){
-//				if( k_nearest_neighbors == 0 ){
-//					exit_program();
-//				}
-//				else{
-//					cout_and_log_file_pertinent << "Invalid number, must be between 1 and " << number_of_vertices - 1 << std::endl;
-//					continue;
-//				}
-//			}
-//			else{
-//				default_k_nearest_neighbors = k_nearest_neighbors;
-//				break;
-//			}
-//		}
-//		cout_and_log_file_pertinent << "Invalid number, please try again" << std::endl;
-//	}
-//	cout_and_log_file_pertinent << "You entered: " << k_nearest_neighbors << std::endl << std::endl;
-//	cout_and_log_file_pertinent.flush();
-//}
-//
-//void get_inputs(size_t& number_of_experiments, size_t& k, double& subset_X_percent, size_t& number_of_vertices, double& alpha, double& beta){
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get number of experiments to run, check if valid
-//	//
-//	std::string input = "";
-//	while(1){
-//		cout_and_log_file_pertinent << std::endl << "Enter number of experiments to run (0 to EXIT, ENTER for default<" << default_number_of_experiments << ">): ";
-//		cout_and_log_file_pertinent.flush();
-//		getline(std::cin, input);
-//
-//		if( input.empty() ){
-//			number_of_experiments = default_number_of_experiments;
-//			break;
-//		}
-//
-//		// This code converts from std::string to number safely.
-//		std::stringstream myStream(input);
-//
-//		if (myStream >> number_of_experiments){
-//			if( number_of_experiments <= 0 ){
-//				if( number_of_experiments == 0 ){
-//					exit_program();
-//				}
-//				else{
-//					cout_and_log_file_pertinent << "Invalid number, must be greater than 0" << std::endl;
-//					continue;
-//				}
-//			}
-//			else{
-//				default_number_of_experiments = number_of_experiments;
-//				break;
-//			}
-//		}
-//		cout_and_log_file_pertinent << "Invalid number, please try again" << std::endl;
-//	}
-//	cout_and_log_file_pertinent << "You entered: " << number_of_experiments << std::endl << std::endl;
-//
-//	// get k and subset_X_percent from user
-//	get_inputs(k, subset_X_percent);
-//
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get number of vertices, check if valid
-//	//
-//	input = "";
-//	while(1){
-//		cout_and_log_file_pertinent << std::endl << "Enter number of vertices (0 to EXIT, ENTER for default<" << default_number_of_vertices << ">): ";
-//		cout_and_log_file_pertinent.flush();
-//		getline(std::cin, input);
-//
-//		if( input.empty() ){
-//			number_of_vertices = default_number_of_vertices;
-//			break;
-//		}
-//
-//		// This code converts from std::string to number safely.
-//		std::stringstream myStream(input);
-//
-//		if (myStream >> number_of_vertices){
-//			if( number_of_vertices <= 1 ){
-//				if( number_of_vertices == 0 ){
-//					exit_program();
-//				}
-//				else{
-//					cout_and_log_file_pertinent << "Invalid number, must be greater than 1" << std::endl;
-//					continue;
-//				}
-//			}
-//			else{
-//				default_number_of_vertices = number_of_vertices;
-//				break;
-//			}
-//		}
-//		cout_and_log_file_pertinent << "Invalid number, please try again" << std::endl;
-//	}
-//	cout_and_log_file_pertinent << "You entered: " << number_of_vertices << std::endl << std::endl;
-//
-//	///////////////////////////////////////////////////////////////////////////////////
-//	//
-//	// Get alpha and beta
-//	//
-//	get_inputs(alpha, beta);
-//}
 
 // Print augmenting path (or blossom)
 void print_augmenting_path(const std::string& description, std::vector<vertex_descriptor_t> augmenting_path){

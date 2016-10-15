@@ -20,11 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="max_cardinality_matching_no_mapping.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="Email-Enron.txt">
       <Filter>Resource Files</Filter>
     </Text>
@@ -34,25 +29,21 @@
     <Text Include="log.txt">
       <Filter>Resource Files</Filter>
     </Text>
+    <Text Include="Wiki-Vote.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="soc-Epinions1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Enron Email Data.dot">
+    <None Include="USpowerGrid.mtx">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Enron Email Data.graphml">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="X.dot">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="X_complement.dot">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="X_final.dot">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="X_prime.dot">
-      <Filter>Resource Files</Filter>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="max_cardinality_matching_w_no_initial_finder.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
